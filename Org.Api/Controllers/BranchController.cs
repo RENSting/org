@@ -28,17 +28,40 @@ namespace Org.Api.Controllers
             return await _context.Branches.ToListAsync();
         }
 
+        // GET: api/Branch/InCommittee/5    id is Committee's primary key
+        [HttpGet("InCommittee/{id}")]
+        public async Task<ActionResult<IEnumerable<Branch>>> GetBranchesInCommittee(int id)
+        {
+            return await _context.Branches.Where(b => b.CommitteeId == id).ToListAsync();
+        }
+
         // GET: api/Branch/5
+
+        /// <summary>
+        /// 返回的结果同时包含了所属的委员会对象，和，支部班子成员，但不包含会员列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Branch>> GetBranch(int id)
         {
-            var branch = await _context.Branches.FindAsync(id);
-
-            if (branch == null)
+            var query = _context.Branches
+                            .Include(b => b.Committee)
+                            .Include(b => b.BranchRanks)
+                                .ThenInclude(r => r.Member);
+            var branch = await query.Where(b => b.Id == id).FirstOrDefaultAsync();
+            if (branch != null)
             {
-                return NotFound();
+                //防止循环引用
+                foreach (var r in branch.BranchRanks)
+                {
+                    r.Branch = null;
+                    r.Member.CommitteeRanks.Clear();
+                    r.Member.BranchRanks.Clear();
+                    r.Member.Branch = null;
+                }
+                branch.Committee.Branches.Clear();
             }
-
             return branch;
         }
 

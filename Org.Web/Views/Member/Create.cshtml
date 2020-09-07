@@ -1,0 +1,233 @@
+@model Org.Entity.Member
+
+@{
+    ViewData["Title"]="会员";
+}
+
+<h1>新建会员<span style="color:red;">*</span></h1>
+@if(Model.BranchId > 0){
+    <p>会员将加入支部：@Html.DisplayFor(m => m.Branch.Name)</p>
+}
+<div class="form-inline">
+    <label class="col-form-label col-form-label-sm mr-2">请先身份证号码：</label>
+    <input id="txtCheckMember" class="form-control form-control-sm" style="width:200px;">
+    @* <span id="checkIdCardNumber"></span> *@
+    <button id="btnCheckMember" onclick="checkIdCardNumber();return false;" 
+        class="btn btn-sm btn-secondary ml-2">检查会员</button>
+</div>
+
+<form asp-action="Create" method="POST">
+    @Html.HiddenFor(m => m.BranchId)
+    @Html.HiddenFor(m=>m.IdCardNumber)
+    <div class="card mt-2" id="infoArea" style="width:800px;"> 
+        <div class="alert alert-info">
+            输入的身份证号是新会员，请录入会员信息后保存，或者点击
+            <a href="#" onclick="recheckIdCardNumber(); return false;">”重新输入“</a>
+            修改身份证号码再次检查会员。
+        </div>
+        <div class="card-body p-2">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="form-group row mb-2">
+                <label asp-for="Name" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Name" class="form-control form-control-sm">
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <label asp-for="MobilePhone" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="MobilePhone" class="form-control form-control-sm">
+                    <span asp-validation-for="MobilePhone" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="Email" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Email" class="form-control form-control-sm">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="col-2">会员状态</div>
+                <div class="col-4">
+                    <div class="row m-0 p-0">
+                        <div class="form-check col-6">
+                            <input class="form-check-input" asp-for="IsActive">
+                            <label class="form-check-label" asp-for="IsActive"></label>
+                        </div>
+                        <div class="form-check col-6">
+                            <input class="form-check-input" asp-for="IsCandidate">
+                            <label class="form-check-label" asp-for="IsCandidate"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="Gender" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <select asp-for="Gender" asp-items="@Html.GetEnumSelectList<Org.Entity.Gender>()"
+                        class="form-control form-control-sm"></select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+                <label asp-for="BirthDate" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="BirthDate" class="form-control form-control-sm">
+                    <span asp-validation-for="BirthDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="NativePlace" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="NativePlace" class="form-control form-control-sm">
+                    <span asp-validation-for="NativePlace" class="text-danger"></span>
+                </div>
+                <label asp-for="Nation" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Nation" class="form-control form-control-sm">
+                    <span asp-validation-for="Nation" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="Education" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Education" class="form-control form-control-sm">
+                    <span asp-validation-for="Education" class="text-danger"></span>
+                </div>
+                <label asp-for="StemTitle" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="StemTitle" class="form-control form-control-sm">
+                    <span asp-validation-for="StemTitle" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="SocialPosition" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="SocialPosition" class="form-control form-control-sm">
+                    <span asp-validation-for="SocialPosition" class="text-danger"></span>
+                </div>
+                <label asp-for="CareerDate" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="CareerDate" class="form-control form-control-sm">
+                    <span asp-validation-for="CareerDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="WorkUnit" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="WorkUnit" class="form-control form-control-sm">
+                    <span asp-validation-for="WorkUnit" class="text-danger"></span>
+                </div>
+                <label asp-for="WorkPost" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="WorkPost" class="form-control form-control-sm">
+                    <span asp-validation-for="WorkPost" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-2 col-form-label col-form-label-sm">工作地点</label>
+                <div class="col-2 pr-2">
+                    <input asp-for="WorkCity" class="form-control form-control-sm" placeholder="(省/市/自治区)">
+                    <span asp-validation-for="WorkCity" class="text-danger"></span>
+                </div>
+                <div class="col-2 pl-2">
+                    <input asp-for="WorkDistrict" class="form-control form-control-sm" placeholder="(市/区/县)">
+                    <span asp-validation-for="WorkDistrict" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <input asp-for="WorkAddress" class="form-control form-control-sm" placeholder="(工作单位详细地址)">
+                    <span asp-validation-for="WorkAddress" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label class="col-2 col-form-label col-form-label-sm">居住地点</label>
+                <div class="col-2 pr-2">
+                    <input asp-for="ResideCity" class="form-control form-control-sm" placeholder="(省/市/自治区)">
+                    <span asp-validation-for="ResideCity" class="text-danger"></span>
+                </div>
+                <div class="col-2 pl-2">
+                    <input asp-for="ResideDistrict" class="form-control form-control-sm" placeholder="(市/区/县)">
+                    <span asp-validation-for="ResideDistrict" class="text-danger"></span>
+                </div>
+                <div class="col-6">
+                    <input asp-for="ResideAddress" class="form-control form-control-sm" placeholder="(工作单位详细地址)">
+                    <span asp-validation-for="ResideAddress" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="Sponsor1" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Sponsor1" class="form-control form-control-sm">
+                    <span asp-validation-for="Sponsor1" class="text-danger"></span>
+                </div>
+                <label asp-for="Sponsor2" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-4">
+                    <input asp-for="Sponsor2" class="form-control form-control-sm">
+                    <span asp-validation-for="Sponsor2" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row mb-2">
+                <label asp-for="Remarks" class="col-2 col-form-label col-form-label-sm"></label>
+                <div class="col-10">
+                    <input asp-for="Remarks" class="form-control form-control-sm">
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="from-group">
+                <input type="submit" value="保存新会员" class="btn btn-primary text-nowrap">
+            </div>
+        </div>
+    </div>
+</form>
+@if(Model.BranchId>0){
+    <div class="row p-4">
+        <a asp-action="Branches" asp-controller="Committee" 
+            asp-route-id = "@ViewBag.CommitteeId"
+            asp-route-bid = "@Model.BranchId"
+            class="btn btn-secondary text-nowrap">返回支部清单</a>
+    </div>
+}
+
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(function(){
+            var isValid = "@ViewBag.IsValid";
+            if(isValid.toLowerCase() == "true"){
+                $("#infoArea").hide();
+            }else{
+                $("#txtCheckMember").val("@Model.IdCardNumber");
+            }
+        });
+
+        function checkIdCardNumber(){
+            var idCardNumber = $("#txtCheckMember").val();
+            if(idCardNumber.length == 0){
+                alert("必须输入身份证号");
+                return;
+            }
+            var checkRegx = /^\d{18}$/;
+            if(!checkRegx.test(idCardNumber)){
+                alert("身份证号不合法，应该是18位数字");
+                return;
+            }
+            $.getJSON("/Member/CheckMember", 
+                {"idCardNumber": idCardNumber},
+                function(m){
+                    if(m == null){
+                        $("#txtCheckMember").attr("disabled","disabled");
+                        $("#btnCheckMember").hide();
+                        $("#IdCardNumber").val(idCardNumber);
+                        $("#infoArea").show();
+                    }else{
+                        alert(m);
+                    }
+                });
+        }
+
+        function recheckIdCardNumber(){
+            $("#txtCheckMember").attr("disabled", false);
+            $("#btnCheckMember").show();
+            $("#infoArea").hide();
+        }
+
+    </script>
+}

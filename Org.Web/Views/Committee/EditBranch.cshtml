@@ -1,0 +1,52 @@
+@model Org.Entity.Branch
+
+@{
+    ViewData["Title"]="支部";
+}
+
+<h1>
+    @if(Model.Id > 0){
+        @: 编辑支部信息
+    }else{
+        @: 新建支部<span style="color:red;">*</span>
+    }
+</h1>
+<form asp-action="EditBranch" method="POST" class="w-50">
+    <p>
+        @Html.HiddenFor(m =>m.Id)
+        @Html.HiddenFor(m=>m.CommitteeId)
+        <span>所属委员会：</span>
+        <span style="font-weight:bolder;">@Model.Committee.Name</span>
+    </p>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ShortName"></label>
+        <input asp-for="ShortName" class="form-control" placeholder=" 不超过20个字的简称">
+        <span asp-validation-for="ShortName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FoundDate"></label>
+        <input asp-for="FoundDate" class="form-control">
+        <span asp-validation-for="FoundDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CurrentSequence"></label>
+        <input asp-for="CurrentSequence" class="form-control">
+        <span asp-validation-for="CurrentSequence" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="保存并返回" class="btn btn-primary text-nowrap">
+        <a asp-action="Branches" asp-route-id = "@Model.CommitteeId"
+            asp-route-bid="@Model.Id"
+            class="btn btn-secondary text-nowrap">返回委员会支部清单</a>
+    </div>
+</form>
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

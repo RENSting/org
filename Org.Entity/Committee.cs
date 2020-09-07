@@ -8,11 +8,15 @@ namespace Org.Entity
     {
         public int Id{get;set;}
 
+        [Display(Name="委员会全称")]
+        [MaxLength(200), Required]
         public string Name{get;set;}
 
+        [Display(Name="简称"), MaxLength(10), Required]
         public string ShortName{get;set;}
 
-        [Display(Name="成立日期")]
+        [Display(Name = "成立日期"), DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime FoundDate{get;set;}
 
         [Display(Name="现任届次")]

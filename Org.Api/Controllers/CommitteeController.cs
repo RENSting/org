@@ -25,7 +25,22 @@ namespace Org.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Committee>>> GetCommittees()
         {
-            return await _context.Committees.ToListAsync();
+            var query = _context.Committees
+                            .Include(c=>c.CommitteeRanks)
+                                .ThenInclude(r=>r.Member);
+
+            //return await _context.Committees.ToListAsync();
+            //remove recursively reference
+            var result = await query.ToListAsync();
+            foreach(var c in result){
+                foreach(var r in c.CommitteeRanks){
+                    r.Committee = null;
+                    r.Member.CommitteeRanks.Clear();
+                    r.Member.BranchRanks.Clear();
+                    r.Member.Branch = null;
+                }
+            }
+            return result;
         }
 
         // GET: api/Committee/5

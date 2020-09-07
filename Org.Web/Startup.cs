@@ -28,6 +28,8 @@ namespace Org.Web
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddScoped<IApiConnector, ApiConnector>();
+            services.AddScoped<ICommitteeService, CommitteeService>();
+            services.AddScoped<IMemberService, MemberService>();
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }

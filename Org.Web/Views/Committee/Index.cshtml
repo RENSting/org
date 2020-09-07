@@ -1,0 +1,64 @@
+@model IEnumerable<Org.Entity.Committee>
+
+@{
+    ViewData["Title"] = "委员会";
+    int committeeCount;
+    if(Model == null){
+        committeeCount = 0;
+    }
+    else{
+        committeeCount = Model.Count();
+    }
+}
+
+<h1>委员会</h1>
+<p>
+    <a asp-action="Edit">新建委员会</a>
+</p>
+
+@if(committeeCount == 0){
+    <div class="alert alert-warning">
+        系统上没有任何委员会，请点击上面的“新建委员会”开始。
+    </div>
+}
+else{
+    <div class="accordion" id="committees">
+        @{int i = 0;}
+        @foreach(var c in Model){
+            var show = i==0? "show": "";
+            var rankQuery = c.CommitteeRanks.Where(r =>r.Sequence==c.CurrentSequence).ToList();
+
+            <div class="card">
+                <div class="card-header p-0" id="header@(i)">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse" 
+                            data-target="#body@(i)" aria-expanded="true" aria-controls="body@(i)">
+                        @c.Name
+                        </button>
+                    </h2>
+                </div>
+                <div id="body@(i)" class="collapse @(show)" aria-labelledby="body@(i)" 
+                    data-parent="#committees">
+                    <div class="card-body">
+                        <div>
+                            @Html.DisplayFor(m=>c.ShortName)<span>&nbsp;成立于&nbsp;</span>@Html.DisplayFor(m=>c.FoundDate)
+                        </div>
+                        <div>
+                            @if(rankQuery.Count == 0){
+                                @: 没有委员会领导班子成员信息
+                            }else{
+                                @: Display members of leadship
+                            }
+                        </div>
+                        <div class="mt-2">
+                            <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-primary">编辑委员会信息</a>
+                            <a asp-action="EditRanks" asp-route-id = "@c.Id" class="btn btn-sm btn-success">编辑班子成员</a>
+                            <a asp-action="Branches" asp-route-id="@c.Id" class="btn btn-sm btn-dark">支部和会员管理</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            i++;
+        }
+    </div>
+}

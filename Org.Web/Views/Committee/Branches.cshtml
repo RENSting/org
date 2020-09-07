@@ -1,0 +1,114 @@
+@model BranchesViewModel
+
+@{
+    ViewData["Title"] = "支部";
+    var branchCount = Model.Branches.Count;
+}
+
+<h1>@Model.ThisCommittee.Name</h1>
+
+<p>
+    <a asp-action="EditBranch" asp-route-cid="@Model.ThisCommittee.Id">新建支部</a>
+</p>
+@if(branchCount <= 0){
+    <div class="alert alert-warning">
+        当前委员会中尚未创建任何支部，请点击“新建支部”开始。
+    </div>
+}
+else{
+    <form asp-action="Branches" class="form-inline">
+        @Html.HiddenFor(m=>m.ThisCommittee.Id)
+        @Html.HiddenFor(m=>m.ThisCommittee.Name)
+        <div class="form-group">
+            <label asp-for="SelectedBranch.Id">选择支部：</label>         
+            <select asp-for="SelectedBranch.Id" asp-items="@Model.BranchesList" 
+                class="form-control"></select>
+        </div>
+        <div class="form-group ml-4">
+            <input type="submit" value="查看" class="btn btn-sm btn-primary">
+        </div>
+        <small class="form-text text-muted">选择一个支部，点击“查看”按钮切换到该支部信息</small>
+    </form>
+    <div class="card mt-2">
+        <div class="card-body">
+            <h4 class="card-title">
+                支部名称：@Model.SelectedBranch.Name
+            </h4>
+            <div>
+                @Html.DisplayFor(m=>m.SelectedBranch.ShortName)
+                <span>&nbsp;成立于&nbsp;</span>
+                @Html.DisplayFor(m=>m.SelectedBranch.FoundDate)
+            </div>
+            <div>
+                @{
+                    var rankQuery = Model.SelectedBranch.BranchRanks
+                            .Where(r =>r.Sequence==Model.SelectedBranch.CurrentSequence)
+                            .OrderBy(r => r.SortOrder)
+                            .ToList();
+                }
+                @if(rankQuery.Count == 0){
+                    @: 没有支部领导班子成员信息
+                }else{
+                    @: Display members of leadship
+                }
+            </div>
+            <div class="mt-2">
+                <a asp-action="EditBranch" asp-route-id="@Model.SelectedBranch.Id" 
+                    class="btn btn-sm btn-primary">编辑支部信息</a>
+                <a asp-action="EditBranchRanks" asp-route-id = "@Model.SelectedBranch.Id" 
+                    class="btn btn-sm btn-success">编辑班子成员</a>
+            </div>
+            <div>
+                <span class="small text-muted">该支部目前共有会员（含发展中）</span>
+                <span class="text-dark">@Model.Members.Count</span>
+                <span class="small text-muted">名，添加新会员请点击</span>
+                <a asp-action="Create" asp-controller="Member" asp-route-bid="@Model.SelectedBranch.Id">
+                    录入新会员
+                </a>
+            </div>
+            @if(Model.Members.Count == 0){
+                <div class="alert alert-warning">
+                    支部中没有会员。添加新会员请点击“添加会员”开始。
+                </div>
+            }else{
+                <table class="table table-sm small">
+                    <thead class="thead-dark text-white">
+                        <tr>
+                            <th>姓名</th>
+                            <th>性别</th>
+                            <th>年龄</th>
+                            <th>工作单位</th>
+                            <th>职务</th>
+                            <th>社会职务</th>
+                            <th>手机</th>
+                            <th>邮箱</th>
+                            <th>有效</th>
+                            <th>发展中</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var m in Model.Members){
+                            <tr>
+                                <td>@Html.DisplayFor(l => m.Name)</td>
+                                <td>@Html.DisplayFor(l => m.Gender)</td>
+                                <td>@(DateTime.Today.Year - m.BirthDate.Year)岁 </td>
+                                <td>@Html.DisplayFor(l => m.WorkUnit)</td>
+                                <td>@Html.DisplayFor(l => m.WorkPost)</td>
+                                <td>@Html.DisplayFor(l => m.SocialPosition)</td>
+                                <td>@Html.DisplayFor(l => m.MobilePhone)</td>
+                                <td>@Html.DisplayFor(l => m.Email)</td>
+                                <td>@Html.DisplayFor(l => m.IsActive)</td>
+                                <td>@Html.DisplayFor(l => m.IsCandidate)</td>
+                                <td>
+                                    @Html.ActionLink("详情", "Details", "Member", new {id = m.Id})
+                                    @Html.ActionLink("编辑", "Edit", "Member", new {id = m.Id})
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}

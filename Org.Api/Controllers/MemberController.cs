@@ -28,6 +28,31 @@ namespace Org.Api.Controllers
             return await _context.Members.ToListAsync();
         }
 
+        // GET: api/Member/InBranch/5
+        [HttpGet("InBranch/{id}")]
+        public async Task<ActionResult<IEnumerable<Member>>> GetMembersInBranch(int id)
+        {
+            return await _context.Members.Where(m => m.BranchId == id).ToListAsync();
+        }
+
+        // 返回的会员对象包含了他所属的支部。
+        // GET: api/Member/GetByIdCardNumber?idCardNumber=310102197310260496
+        [HttpGet("GetByIdCardNumber")]
+        public async Task<ActionResult<Member>> GetMember(string idCardNumber)
+        {
+            var member = await _context.Members.Include(m => m.Branch)
+                            .Where(m => m.IdCardNumber == idCardNumber)
+                            .FirstOrDefaultAsync();
+            if(member != null)
+            {
+                if(member.Branch != null)
+                {
+                    member.Branch.Members.Clear();
+                }
+            }
+            return member;
+        }
+
         // GET: api/Member/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Member>> GetMember(int id)
@@ -81,8 +106,18 @@ namespace Org.Api.Controllers
         public async Task<ActionResult<Member>> PostMember(Member member)
         {
             _context.Members.Add(member);
+            var log = new MemberStateLog{
+                Member = member,        //EF 跟踪
+                State = MemberState.Record,
+                StateDate = DateTime.Today,
+                TimeStamp = DateTime.Now,
+                SubCategory = "补录会员信息",
+                Description = "",
+            };
+            _context.MemberStateLogs.Add(log);
             await _context.SaveChangesAsync();
-
+            
+            member.StateLogs.Clear();
             return CreatedAtAction("GetMember", new { id = member.Id }, member);
         }
 

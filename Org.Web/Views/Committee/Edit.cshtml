@@ -1,0 +1,52 @@
+@model Org.Entity.Committee
+
+@{
+    ViewData["Title"] = "编辑";
+}
+
+<h1>
+    @if(Model.Id <= 0){
+        @: 新建委员会
+        <span style="color:red;">*</span>
+    }else{
+        @: 修改委员会
+    }
+</h1>
+<form asp-action="Edit" class="w-50" style="min-width: 400px;">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @Html.HiddenFor(m=>m.Id)
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" placeholder="输入委员会正式名称">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ShortName"></label>
+        <input asp-for="ShortName" class="form-control" placeholder="输入一个10字符内简称">
+        <span asp-validation-for="ShortName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FoundDate"></label>
+        <input asp-for="FoundDate" class="form-control">
+        <span asp-validation-for="FoundDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CurrentSequence"></label>
+        <input asp-for="CurrentSequence" class="form-control">
+        <span asp-validation-for="CurrentSequence" class="text-danger"></span>
+    </div>
+    <div class="form-group row">
+        <div class="col">
+            <input type="submit" value="保存" class="btn btn-primary">
+        </div>
+        <div class="col text-nowrap">
+            <a asp-action="Index" class="btn btn-secondary">返回委员会列表</a>
+        </div>
+        
+    </div>
+</form>
+
+
+@section Scripts{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
