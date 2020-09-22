@@ -12,6 +12,11 @@ namespace Org.Web.Services
         const string ROUTE_MEMBER = "api/Member";
         const string ROUTE_ITEM_LOG = "api/MemberItemLog";
 
+        const string FORMAT_MEMBER_ITEMLOGS = "api/MemberItemLog/Logs/{0}";
+        const string FORMAT_MEMBER_STATELOGS = "api/MemberStateLog/Logs/{0}";
+        const string FORMAT_MEMBER_BRANCHRANKS = "api/BranchRanks/Member/{0}";
+        const string FORMAT_MEMBER_COMMITTEERANKS = "api/CommitteeRanks/Member/";
+
         const string FORMAT_MEMBER_IN_BRANCH = "api/Member/InBranch/{0}"; // api/Member/InBranch/5
         //  api/Member/GetByIdCardNumber?idCardNumber=310102197310260496
         const string FORMAT_MEMBER_CHECK_IDCARD = "api/Member/GetByIdCardNumber?idCardNumber={0}";
@@ -189,5 +194,21 @@ namespace Org.Web.Services
         public async Task VerifyMember(Member member)
             => await _api.HttpPutAsync<Member, StatusCodeResult>(
                 ROUTE_MEMBER + $"/{member.Id}", member);
+
+        public async Task<IEnumerable<BranchRanks>> GetBranchRanksOfMember(int memberId)
+            => await _api.HttpGetAsync<IEnumerable<BranchRanks>>(
+                string.Format(FORMAT_MEMBER_BRANCHRANKS, memberId));
+
+        public async Task<IEnumerable<CommitteeRanks>> GetCommitteeRanksOfMember(int memberId)
+            => await _api.HttpGetAsync<IEnumerable<CommitteeRanks>>(
+                string.Format(FORMAT_MEMBER_COMMITTEERANKS, memberId));
+
+        public async Task<IEnumerable<MemberItemLog>> GetMemberItemLogs(int memberId)
+            => await _api.HttpGetAsync<IEnumerable<MemberItemLog>>(
+                string.Format(FORMAT_MEMBER_ITEMLOGS, memberId));
+
+        public async Task<IEnumerable<MemberStateLog>> GetMemberStateLogs(int memberId)
+            => await _api.HttpGetAsync<IEnumerable<MemberStateLog>>(
+                string.Format(FORMAT_MEMBER_STATELOGS, memberId));
     }
 }

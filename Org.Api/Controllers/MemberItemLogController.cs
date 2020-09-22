@@ -28,6 +28,16 @@ namespace Org.Api.Controllers
             return await _context.MemberItemLogs.ToListAsync();
         }
 
+        // GET: api/MemberItemLog/Logs/5
+        [HttpGet("Logs/{id}")]
+        public async Task<ActionResult<IEnumerable<MemberItemLog>>> GetLogsOfMember(int id)
+        {
+            return await _context.MemberItemLogs    
+                            .Where(l=>l.MemberId == id)
+                            .OrderByDescending(l=>l.TimeStamp)
+                            .ToListAsync();
+        }
+
         // GET: api/MemberItemLog/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MemberItemLog>> GetMemberItemLog(int id)

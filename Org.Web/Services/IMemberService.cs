@@ -32,5 +32,33 @@ namespace Org.Web.Services
         /// <param name="member"></param>
         /// <returns></returns>
         Task VerifyMember(Member member);
+
+        /// <summary>
+        /// 获取指定会员在支部中的任职记录，每个BranchRanks对象包含了支部的基础信息Branch
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<BranchRanks>> GetBranchRanksOfMember(int memberId);
+
+        /// <summary>
+        /// 获取指定会员在各个基层委员会中的任职记录，每个CommitteeRanks对象包含了基础信息Committee
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<CommitteeRanks>> GetCommitteeRanksOfMember(int memberId);
+
+        /// <summary>
+        /// 简单获取指定会员的事项变更记录，按变更时间倒排序
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<MemberItemLog>> GetMemberItemLogs(int memberId);
+
+        /// <summary>
+        /// 简单获取指定会员的状态变更记录，按变更时间倒排序
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<MemberStateLog>> GetMemberStateLogs(int memberId);
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Org.Web.Services;
 using Org.Entity;
+using Org.Web.Models;
 
 namespace Org.Web.Controllers
 {
@@ -144,6 +145,28 @@ namespace Org.Web.Controllers
             return View(model);
 
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var model = new MemberDetailsViewModel();
+            model.MemberInfo = await _memberApi.GetMember(id);
+            if (model.MemberInfo == null)
+            {
+                return NotFound();
+            }
+            model.MemberId = id;
+            if (model.MemberInfo.BranchId > 0)
+            {
+                model.BranchInfo = await _committeeApi.GetBranch(model.MemberInfo.BranchId);
+            }
+            else
+            {
+                model.BranchInfo = null;
+            }
+
+            return View(model);
         }
     }
 }

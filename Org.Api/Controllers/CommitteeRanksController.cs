@@ -28,6 +28,23 @@ namespace Org.Api.Controllers
             return await _context.CommitteeRanks.ToListAsync();
         }
 
+        // GET: api/CommitteeRanks/Member/5
+        //   根据MemberId检索指定会员在基层委员会的任职情况
+        [HttpGet("Member/{id}")]
+        public async Task<ActionResult<IEnumerable<CommitteeRanks>>> GetRansOfMember(int id)
+        {
+            var query = _context.CommitteeRanks
+                            .Include(r=>r.Committee)
+                        .Where(r=>r.MemberId==id)
+                        .OrderBy(r=>r.AppointDate);
+            var ranks = await query.ToListAsync();
+            foreach(var r in ranks)
+            {
+                r.Committee.CommitteeRanks.Clear();
+            }
+            return ranks;
+        }
+
         // GET: api/CommitteeRanks/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CommitteeRanks>> GetCommitteeRanks(int id)
